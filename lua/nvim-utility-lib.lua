@@ -72,71 +72,35 @@ function M.overseer_message()
 	return ""
 end
 
--- Returns all overseer task names.
-function M.overseer_tasks()
+-- Runs the first task from a list of tasks.
+function M.overseer_run_first(names)
 	local overseer = try_require("overseer")
-	local tmpl = try_require("overseer.template")
-	local names = {}
+	local template = try_require("overseer.template")
 
-	if overseer and tmpl then
+	if overseer and template then
 		local opts = { dir = vim.fn.getcwd() }
 
-		tmpl.list(opts, function(templates)
-			for _, template in ipairs(templates) do
-				table.insert(names, template.name)
+		-- This is async with a completion CB.
+		template.list(opts, function(templates)
+			-- Collect the names of all templates.
+			local found_names = {}
+
+			for _, tmpl in ipairs(templates) do
+				table.insert(found_names, tmpl.name)
 			end
-		end)
-	end
 
-	return names
-end
-
--- Determines if an overseer task with the given name could be found.
-function M.overseer_has_task(name)
-	local overseer = try_require("overseer")
-	local tmpl = try_require("overseer.template")
-	local found = false
-
-	if overseer and tmpl then
-		local opts = { dir = vim.fn.getcwd() }
-
-		tmpl.list(opts, function(templates)
-			for _, template in ipairs(templates) do
-				if template.name == name then
-					found = true
+			-- Find the first matching name.
+			for _, name in ipairs(names) do
+				if found_names:contains(name) then
+					-- Run the template and abort.
+					overseer.run_template({ name = name })
+					return
 				end
 			end
+
+			vim.notify("no task found", vim.log.levels.ERROR)
 		end)
 	end
-
-	return found
-end
-
--- Search for any of the given overseer tasks. Returns the found name or `nil`.
-function M.overseer_find_task(names)
-	for _, name in ipairs(names) do
-		if M.overseer_has_task(name) then
-			return name
-		end
-	end
-
-	return nil
-end
-
--- Runs the first task from a list of tasks.
-function M.overseer_run_first_of(names)
-	local found = M.overseer_find_task(names)
-
-	if found then
-		local overseer = try_require("overseer");
-		if overseer then
-			overseer.run_template({ name = found })
-			return true
-		end
-	end
-
-	vim.notify("build task not found", vim.log.levels.ERROR)
-	return false
 end
 
 local function location_less(a, b)

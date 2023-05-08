@@ -25,6 +25,4 @@ Available functions:
 | `goto_next_only_warning()`         | Goes to the next warning globally. |
 | `goto_prev_only_warning()`         | Goes to the previous warning globally. |
 | `overseer_message()`               | Gets the last output line from the currently running overseer task. |
-| `overseer_has_task(name)`          | Determines if there is an overseer task with the given name. |
-| `overseer_find_task(names)`        | Returns the first task from the list that was found. |
-| `overseer_run_first_of(names)`     | Runs the first task that is found in the provided list. |
+| `overseer_run_first(names)`        | Runs the first task that is found from the provided list. |
