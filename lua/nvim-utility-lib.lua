@@ -86,12 +86,12 @@ function M.overseer_run_first(names)
 			local found_names = {}
 
 			for _, tmpl in ipairs(templates) do
-				table.insert(found_names, tmpl.name)
+				found_names[tmpl.name] = true
 			end
 
 			-- Find the first matching name.
 			for _, name in ipairs(names) do
-				if found_names:contains(name) then
+				if found_names[name] ~= nil then
 					-- Run the template and abort.
 					overseer.run_template({ name = name })
 					return
