@@ -74,10 +74,11 @@ end
 
 -- Determines if an overseer task with the given name could be found.
 function M.overseer_has_task(name)
+	local overseer = try_require("overseer")
 	local tmpl = try_require("overseer.template")
 	local found = false
 
-	if tmpl then
+	if overseer and tmpl then
 		local opts = { dir = vim.fn.getcwd() }
 
 		tmpl.list(opts, function(templates)
@@ -105,7 +106,7 @@ end
 
 -- Runs the first task from a list of tasks.
 function M.overseer_run_first_of(names)
-	local found = find_template(names)
+	local found = M.overseer_find_task(names)
 
 	if found then
 		local overseer = try_require("overseer");
