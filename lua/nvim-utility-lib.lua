@@ -30,6 +30,48 @@ function M.toggle_quickfix()
 	end
 end
 
+local function try_require(name)
+	local success, mod = pcall(require, name)
+	if success then
+		return mod
+	end
+	return nil
+end
+
+-- Returns the last output from the currently running overseer task.
+function M.overseer_message()
+	local overseer = try_require("overseer")
+
+	if overseer then
+		local task_list = require("overseer.task_list")
+
+		local tasks = task_list.list_tasks({
+			status = overseer.STATUS.RUNNING
+		})
+
+		local task = tasks[1]
+
+		if task == nil or task.components == nil then
+			return ""
+		end
+
+		for _,component in ipairs(task.components) do
+			if component.name == "on_output_summarize" then
+				local lines = component.lines
+				local line = lines[#lines]
+
+				if line == nil then
+					return ""
+				else
+					return line
+				end
+			end
+		end
+	end
+
+	return ""
+end
+
 local function location_less(a, b)
 	if a[1] == b[1] then
 		if a[2] == b[2] then
