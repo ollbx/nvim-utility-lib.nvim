@@ -16,9 +16,7 @@ Available functions:
 | ---------------------------------- | ----------- |
 | `extended_home()`                  | Extended home key (first press uses whitespace, second press goes to column 1). |
 | `toggle_quickfix()`                | Toggles the quickfix window. |
-| `goto_next_diagnostic(name, opts)` | Goes to the next diagnostic globally. `name` is used for notifications messages. |
-|                                    | `opts` is used to filter diagnostics according to `vim.diagnostic.get()`. |
-|                                    | Both arguments are optional. |
+| `goto_next_diagnostic(name, opts)` | Goes to the next diagnostic globally. `name` is used for notifications messages. `opts` is used to filter diagnostics according to `vim.diagnostic.get()`. Both arguments are optional. |
 | `goto_prev_diagnostic(name, opts)` | Same as `goto_next_diagnostic(name, opts)` but in the reverse order. |
 | `goto_next_error()`                | Goes to the next error globally. |
 | `goto_prev_error()`                | Goes to the previous error globally. |
