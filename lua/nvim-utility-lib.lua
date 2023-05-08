@@ -72,6 +72,25 @@ function M.overseer_message()
 	return ""
 end
 
+-- Returns all overseer task names.
+function M.overseer_tasks()
+	local overseer = try_require("overseer")
+	local tmpl = try_require("overseer.template")
+	local names = {}
+
+	if overseer and tmpl then
+		local opts = { dir = vim.fn.getcwd() }
+
+		tmpl.list(opts, function(templates)
+			for _, template in ipairs(templates) do
+				table.insert(names, template.name)
+			end
+		end)
+	end
+
+	return names
+end
+
 -- Determines if an overseer task with the given name could be found.
 function M.overseer_has_task(name)
 	local overseer = try_require("overseer")
