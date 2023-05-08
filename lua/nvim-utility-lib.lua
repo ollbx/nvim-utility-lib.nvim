@@ -72,6 +72,53 @@ function M.overseer_message()
 	return ""
 end
 
+-- Determines if an overseer task with the given name could be found.
+function M.overseer_has_task(name)
+	local tmpl = try_require("overseer.template")
+	local found = false
+
+	if tmpl then
+		local opts = { dir = vim.fn.getcwd() }
+
+		tmpl.list(opts, function(templates)
+			for _, template in ipairs(templates) do
+				if template.name == name then
+					found = true
+				end
+			end
+		end)
+	end
+
+	return found
+end
+
+-- Search for any of the given overseer tasks. Returns the found name or `nil`.
+function M.overseer_find_task(names)
+	for _, name in ipairs(names) do
+		if M.overseer_has_task(name) then
+			return name
+		end
+	end
+
+	return nil
+end
+
+-- Runs the first task from a list of tasks.
+function M.overseer_run_first_of(names)
+	local found = find_template(names)
+
+	if found then
+		local overseer = try_require("overseer");
+		if overseer then
+			overseer.run_template({ name = found })
+			return true
+		end
+	end
+
+	vim.notify("build task not found", vim.log.levels.ERROR)
+	return false
+end
+
 local function location_less(a, b)
 	if a[1] == b[1] then
 		if a[2] == b[2] then
