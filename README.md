@@ -12,7 +12,17 @@ util.toggle_quickfix()
 
 Available functions:
 
-| Function            | Description |
-| ------------------- | ----------- |
-| `extended_home()`   | Extended home key (first press uses whitespace, second press goes to column 1). |
-| `toggle_quickfix()` | Toggles the quickfix window. |
+| Function                           | Description |
+| ---------------------------------- | ----------- |
+| `extended_home()`                  | Extended home key (first press uses whitespace, second press goes to column 1). |
+| `toggle_quickfix()`                | Toggles the quickfix window. |
+| `goto_next_diagnostic(name, opts)` | Goes to the next diagnostic globally. `name` is used for notifications messages. |
+|                                    | `opts` is used to filter diagnostics according to `vim.diagnostic.get()`. |
+|                                    | Both arguments are optional. |
+| `goto_prev_diagnostic(name, opts)` | Same as `goto_next_diagnostic(name, opts)` but in the reverse order. |
+| `goto_next_error()`                | Goes to the next error globally. |
+| `goto_prev_error()`                | Goes to the previous error globally. |
+| `goto_next_warning()`              | Goes to the next warning or error globally. |
+| `goto_prev_warning()`              | Goes to the previous warning or error globally. |
+| `goto_next_only_warning()`         | Goes to the next warning globally. |
+| `goto_prev_only_warning()`         | Goes to the previous warning globally. |
