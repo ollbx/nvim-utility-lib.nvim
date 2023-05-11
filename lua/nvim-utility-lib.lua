@@ -13,7 +13,7 @@ function M.extended_home()
 end
 
 -- Toggles the quickfix list on the bottom of the screen.
-function M.toggle_quickfix()
+function M.qf_toggle()
 	local exists = false
 
 	for _, win in pairs(vim.fn.getwininfo()) do
@@ -28,6 +28,109 @@ function M.toggle_quickfix()
 	else
 		vim.cmd("bo copen")
 	end
+end
+
+local qf = {
+	info = nil,
+	all = nil, -- Full list.
+	sel = nil  -- Current selection.
+}
+
+-- Collects information about the quickfix buffer / window.
+local function qf_info()
+	for _, win in pairs(vim.fn.getwininfo()) do
+		if win.quickfix == 1 then
+			local buf = vim.fn.getbufinfo(win.bufnr)
+			local tick = buf[1].changedtick
+			local index = vim.fn.getqflist({idx = 0}).idx
+
+			return {
+				bufnr = win.bufnr,
+				winid = win.winid,
+				tick = tick,
+				index = index
+			}
+		end
+	end
+	return nil
+end
+
+-- Updates the cached QF information.
+local function qf_update()
+	local new_info = qf_info()
+
+	if not new_info then
+		return
+	end
+
+	-- If the QF content has changed, update data.
+	if not qf.info or qf.info.tick ~= new_info.tick then
+		qf.all = vim.fn.getqflist()
+		qf.sel = nil
+
+		-- Add the index in the "all" list.
+		for i, item in ipairs(qf.all) do
+			item.all_index = i
+		end
+	end
+
+	qf.info = new_info
+end
+
+-- Removes all lines not matching the errorformat from the quickfix list.
+function M.qf_filter()
+	-- Return if already filtered.
+	if qf.sel then
+		return
+	end
+
+	qf_update()
+
+	-- Create a new selection.
+	local new_index = 1
+	qf.sel = {}
+
+	for i, item in ipairs(qf.all) do
+		if item.valid == 1 then
+			table.insert(qf.sel, item)
+
+			-- Select the added entry if it is below the old selection.
+			if i <= qf.info.index then
+				new_index = #(qf.sel)
+			end
+		end
+	end
+
+	-- Update the list and cursor position.
+	vim.fn.setqflist(qf.sel, 'r')
+	vim.fn.setqflist({}, 'a', { idx = new_index })
+
+	-- Update the info to cover the last update.
+	qf.info = qf_info()
+end
+
+-- Restores the previous quickfix list.
+function M.qf_restore()
+	qf_update()
+
+	-- Return if not filtered.
+	if not qf.sel then
+		return
+	end
+
+	-- Find the item under the current cursor.
+	local cur_item = qf.sel[qf.info.index];
+
+	if not cur_item then
+		return
+	end
+
+	vim.fn.setqflist(qf.all, 'r')
+	vim.fn.setqflist({}, 'a', { idx = cur_item.all_index })
+
+	-- Update the info, reset the selection.
+	qf.info = qf_info()
+	qf.sel = nil
 end
 
 local function try_require(name)
