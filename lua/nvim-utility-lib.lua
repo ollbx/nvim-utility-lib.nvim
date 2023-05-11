@@ -79,12 +79,12 @@ end
 
 -- Removes all lines not matching the errorformat from the quickfix list.
 function M.qf_filter()
+	qf_update()
+
 	-- Return if already filtered.
 	if qf.sel then
 		return
 	end
-
-	qf_update()
 
 	-- Create a new selection.
 	local new_index = 1
