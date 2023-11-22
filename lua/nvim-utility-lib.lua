@@ -181,7 +181,8 @@ function M.overseer_run_first(names)
 	local template = try_require("overseer.template")
 
 	if overseer and template then
-		local opts = { dir = vim.fn.getcwd() }
+		local cwd = vim.fn.fnamemodify(vim.fn.getcwd() ':p')
+		local opts = { dir = cwd }
 
 		-- This is async with a completion CB.
 		template.list(opts, function(templates)
@@ -196,7 +197,7 @@ function M.overseer_run_first(names)
 			for _, name in ipairs(names) do
 				if found_names[name] ~= nil then
 					-- Run the template and abort.
-					overseer.run_template({ name = name })
+					overseer.run_template({ cwd = cwd, name = name })
 					return
 				end
 			end
