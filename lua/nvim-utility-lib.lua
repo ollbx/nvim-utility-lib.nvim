@@ -181,7 +181,7 @@ function M.overseer_run_first(names)
 	local template = try_require("overseer.template")
 
 	if overseer and template then
-		local cwd = vim.fn.fnamemodify(vim.fn.getcwd() ':p')
+		local cwd = vim.fn.fnamemodify(vim.fn.getcwd(), ':p')
 		local opts = { dir = cwd }
 
 		-- This is async with a completion CB.
